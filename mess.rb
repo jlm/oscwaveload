@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_relative 'osc_wave'
+require_relative 'wave'
 
 def level_name(level)
   if level
@@ -9,7 +9,7 @@ def level_name(level)
   end
 end
 
-d = OscWave.new(ARGV[0])
+d = Wave.new(ARGV[0])
 # puts d.inspect
 puts "Sample period: #{format_time(d.sample_period)}"
 

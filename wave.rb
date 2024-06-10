@@ -27,7 +27,7 @@ def multiplier(num, mul)
   num
 end
 
-class OscWave
+class Wave
   attr_accessor :timebase, :rate, :amplitude, :amplres, :data_unit, :data_points, :data, :pos
 
   FLOAT_REGEX = /(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/
@@ -124,7 +124,7 @@ class OscWave
     elsif @data[@pos] > @high_t
       true
     else
-      raise OscWave::Indeterminate, "Indeterminate level not outside range #{@low_t} to #{@high_t}"
+      raise Wave::Indeterminate, "Indeterminate level not outside range #{@low_t} to #{@high_t}"
     end
   end
 
