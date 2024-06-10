@@ -7,7 +7,8 @@ module OscWave
 
     class Wave::Indeterminate < RuntimeError; end
 
-    def initialize(wave)
+    def initialize(wave, logger: Logger.new(STDERR))
+      @logger = logger
       @data = []
       @others = []
       @pos = 0
@@ -20,6 +21,7 @@ module OscWave
       else
         raise "unrecognised content type: #{wave.class}"
       end
+      logger.debug "reading data from: #{stream.to_path}"
 
       stream.each_line do |line|
         line.chomp!
@@ -51,6 +53,7 @@ module OscWave
       @midpoint = (@min + @max) / 2
       @high_t = (@max + @midpoint) / 2
       @low_t = (@min + @midpoint) / 2
+      logger.debug("midpoint: #{@midpoint}; high threshold: #{@high_t}; low threshold: #{@low_t}")
     end
 
     def sample_period
@@ -105,7 +108,7 @@ module OscWave
         break unless next_edge
         p2 = Point.new(@pos, level)
         period = p2 - p1
-        puts "#{p1.level_name} for #{period} periods, #{format_time((sample_period * period).round(4))}"
+        @logger.debug "#{p1.level_name} for #{period} periods, #{format_time((sample_period * period).round(4))}"
         @levels << LevelEntry.new(p1.level, period)
       end
 

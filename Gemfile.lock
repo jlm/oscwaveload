@@ -6,6 +6,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     parslet (2.0.0)
     signed_multiset (0.2.1)
+    slop (4.10.1)
     thread_safe (0.3.6)
     unitwise (2.3.0)
       liner (~> 0.2)
@@ -18,6 +19,7 @@ PLATFORMS
   x86_64-darwin-21
 
 DEPENDENCIES
+  slop (>= 3.5.1)
   unitwise (>= 1.1.0)
 
 BUNDLED WITH
