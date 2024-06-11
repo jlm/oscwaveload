@@ -1,0 +1,27 @@
+use OscWave::Point
+
+class LevelEntry
+  @level: Level
+
+  @period: Integer
+
+  include Comparable
+
+  @start: Point
+
+  attr_reader level: untyped
+
+  attr_reader period: untyped
+
+  class Level
+    LEVEL_NAMES: Hash[Level, String]
+    LOW: Level
+    HIGH: Level
+  end
+
+  # @param [Point] start the starting Point (level and position)
+  # @param [Integer] period the number of periods for which the wave remains at this level
+  def initialize: (Point start, Integer period) -> void
+
+  def <=>: (untyped other) -> untyped
+end

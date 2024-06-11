@@ -2,10 +2,24 @@
 
 class LevelEntry
   include Comparable
-  attr_reader :level, :period
+  attr_reader :start, :period
 
-  def initialize(level, period)
-    @level = level
+  class Level
+    LOW = :low
+    HIGH = :high
+    LEVEL_NAMES = {
+      LOW: "Low",
+      HIGH: "High",
+    }
+    def self.to_s(level)
+      LEVEL_NAMES[level.to_sym]
+    end
+  end
+
+  # @param [Point] start the starting Point (level and position)
+  # @param [Integer] period the number of periods for which the wave remains at this level
+  def initialize(start, period)
+    @start = start
     @period = period
   end
 

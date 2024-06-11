@@ -12,14 +12,5 @@ module OscWave
     def -(other)
       @position - other.position
     end
-
-    def level_name
-      if level
-        "High"
-      else
-        "Low"
-      end
-    end
-
   end
 end

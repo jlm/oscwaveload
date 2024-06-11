@@ -1,0 +1,15 @@
+module OscWave
+  class Point
+    @position: Integer
+
+    @level: LevelEntry::Level
+
+    attr_accessor position: Integer
+
+    attr_accessor level: LevelEntry::Level
+
+    def initialize: (Integer position, LevelEntry::Level level) -> void
+
+    def -: (untyped other) -> untyped
+  end
+end

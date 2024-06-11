@@ -1,0 +1,75 @@
+module OscWave
+  class Wave
+    @logger: untyped
+
+    @data: untyped
+
+    @others: untyped
+
+    @pos: untyped
+
+    @min: untyped
+
+    @max: untyped
+
+    @midpoint: untyped
+
+    @high_t: untyped
+
+    @low_t: untyped
+
+    @levels: untyped
+
+    attr_accessor timebase: untyped
+
+    attr_accessor rate: untyped
+
+    attr_accessor amplitude: untyped
+
+    attr_accessor amplres: untyped
+
+    attr_accessor data_unit: untyped
+
+    attr_accessor data_points: untyped
+
+    attr_accessor data: untyped
+
+    attr_accessor pos: untyped
+
+    attr_accessor levels: untyped
+
+    class Wave::Indeterminate < RuntimeError
+    end
+
+    def initialize: (untyped wave, ?logger: untyped) -> void
+
+    def sample_period: () -> untyped
+
+    def next_low: () -> (untyped | nil)
+
+    def next_high: () -> (untyped | nil)
+
+    def next_edge: () -> (untyped | nil)
+
+    def current_level: () -> (LevelEntry::Level)
+
+    def extract_levels: () -> untyped
+
+    def format_time: (untyped time) -> untyped
+
+    def multiplier: (untyped num, untyped mul) -> untyped
+
+    # @param [Integer] start_pos
+    # @param [:low|:high] level
+    # @param [Integer] min_width
+    # @param [Integer] max_width
+    # @return [Integer|nil] position of first matching pulse, or nil
+    def find_pulse: (Integer start_pos, untyped level, Integer min_width, Integer max_width) -> (Integer| nil)
+
+    private
+
+    FLOAT_REGEX: ::Regexp
+
+    def parse_float_unit: (untyped str) -> untyped
+  end
+end

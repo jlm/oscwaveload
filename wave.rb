@@ -6,6 +6,7 @@ module OscWave
     attr_accessor :timebase, :rate, :amplitude, :amplres, :data_unit, :data_points, :data, :pos, :levels
 
     class Wave::Indeterminate < RuntimeError; end
+    class Wave::PositionOutOfRange < RuntimeError; end
 
     def initialize(wave, logger: Logger.new(STDERR))
       @logger = logger
@@ -90,11 +91,11 @@ module OscWave
       nil
     end
 
-    def level
+    def current_level
       if @data[@pos] < @low_t
-        false
+        LevelEntry::Level::LOW
       elsif @data[@pos] > @high_t
-        true
+        LevelEntry::Level::HIGH
       else
         raise Wave::Indeterminate, "Indeterminate level not outside range #{@low_t} to #{@high_t}"
       end
@@ -104,12 +105,12 @@ module OscWave
       @pos = 0
       @levels = []
       while @pos < data_points do
-        p1 = Point.new(@pos, level)
+        p1 = Point.new(@pos, current_level)
         break unless next_edge
-        p2 = Point.new(@pos, level)
+        p2 = Point.new(@pos, current_level)
         period = p2 - p1
-        @logger.debug "#{p1.level_name} for #{period} periods, #{format_time((sample_period * period).round(4))}"
-        @levels << LevelEntry.new(p1.level, period)
+        @logger.debug "#{p1.to_s} for #{period} periods, #{format_time((sample_period * period).round(4))}"
+        @levels << LevelEntry.new(p1, period)
       end
 
     end
@@ -140,6 +141,7 @@ module OscWave
       num
     end
 
+    # here is where find_pulse goes
     private
     FLOAT_REGEX = /(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/
 
