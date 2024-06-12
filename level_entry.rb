@@ -8,16 +8,44 @@ class LevelEntry
   class Level
     LOW = :low
     HIGH = :high
-    LEVEL_NAMES = {
-      LOW: "Low",
-      HIGH: "High",
-    }
-    def self.to_s(level)
-      LEVEL_NAMES[level.to_sym]
+
+    def initialize(level)
+      case level
+      when Integer
+        @level = [LOW, HIGH][level]
+      when TrueClass, FalseClass
+        @level = level ? HIGH : LOW
+      when Symbol
+        if [LOW, HIGH].include? level
+          @level = level
+        else
+          raise ArgumentError, "Invalid level from symbol: #{level.inspect}"
+        end
+      else
+        raise ArgumentError, "Invalid level: #{level.inspect}"
+      end
     end
 
-    def self.!(level)
-      level == HIGH ? LOW : HIGH
+    def to_s
+      @level.to_s
+    end
+
+    def to_sym
+      @level
+    end
+
+    def to_i
+      [LOW, HIGH].index(@level)
+    end
+
+    def invert
+      if @level == LOW
+        HIGH
+      elsif @level == HIGH
+        LOW
+      else
+        raise(ValueError, "invert found bad value @level==#{@level}")
+      end
     end
   end
 

@@ -14,9 +14,12 @@ class LevelEntry
   attr_reader period: untyped
 
   class Level
-    LEVEL_NAMES: Hash[Level, String]
-    LOW: Level
-    HIGH: Level
+    LOW: Symbol
+    HIGH: Symbol
+
+    @level: Symbol
+
+    def invert: -> Level
   end
 
   # @param [Point] start the starting Point (level and position)
