@@ -115,14 +115,14 @@ module OscWave
 
     end
 
-    def format_time(time)
+    def format_time(time, round: 4)
       units = %w[s ms µs ns ps]
       negative = time < 0.0
       time = -time if negative
 
       units.each do |unit|
         if time > 1.0
-          return (negative ? "-" : "") + time.to_s + " " + unit
+          return (negative ? "-" : "") + time.round(round).to_s + " " + unit
         else
           time = time * 1000.0
         end
@@ -141,7 +141,46 @@ module OscWave
       num
     end
 
-    # here is where find_pulse goes
+    # Look for a pulse in the wave data.
+    # @param [Integer] start Search from here
+    # @param [LevelEntry::Level] level the logic level of the sought pulse
+    # @param [Integer] min_width the minimum pulse width
+    # @param [Integer] max_width the maximum pulse width
+    # @param [Hash] options an array of options such as {complain: "description"}
+    # @return [LevelEntry] LevelEntry of first matching pulse, or nil
+    def find_pulse(start, level, min_width, max_width, options = {})
+      start_pos = case
+      when start.is_a?(Numeric)
+        start
+      when start.is_a?(Point)
+        start.position
+      when start.is_a?(LevelEntry)
+        start.start.position
+      else
+        raise TypeError, "find_pulse: start must be a position, Point or LevelEntry"
+      end
+      raise Wave::PositionOutOfRange unless start_pos.between?(0, @data_points)
+      # A high pulse consists of a rising edge followed by a falling edge.
+      @levels.each do |lent|
+        lsp = lent.start.position
+        if lsp >= start_pos && lent.start.level == level
+          @logger.debug("find_pulse: found potential matching pulse at #{lent}")
+          if lent.period < min_width
+            @logger.debug("find_pulse: ... but it's too narrow #{lent.period}")
+            next
+          elsif lent.period > max_width
+            @logger.debug("find_pulse: ... but it's too wide #{lent.period}")
+            next
+          else
+            @logger.debug("find_pulse: ... and it's just right! #{lent.period}")
+            return lent
+          end
+        end
+      end
+      raise options[:complain] if options[:complain]
+      nil
+    end
+
     private
     FLOAT_REGEX = /(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/
 

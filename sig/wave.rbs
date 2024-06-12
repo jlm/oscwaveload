@@ -1,24 +1,26 @@
+use Unitwise::
+
 module OscWave
   class Wave
-    @logger: untyped
+    @logger: Logger
 
-    @data: untyped
+    @data: Array[Float]
 
     @others: untyped
 
-    @pos: untyped
+    @pos: Integer
 
-    @min: untyped
+    @min: Float
 
-    @max: untyped
+    @max: Float
 
-    @midpoint: untyped
+    @midpoint: Float
 
-    @high_t: untyped
+    @high_t: Float
 
-    @low_t: untyped
+    @low_t: Float
 
-    @levels: untyped
+    @levels: Array[LevelEntry]
 
     attr_accessor timebase: untyped
 
@@ -59,17 +61,12 @@ module OscWave
 
     def multiplier: (untyped num, untyped mul) -> untyped
 
-    # @param [Integer] start_pos
-    # @param [:low|:high] level
-    # @param [Integer] min_width
-    # @param [Integer] max_width
-    # @return [Integer|nil] position of first matching pulse, or nil
-    def find_pulse: (Integer start_pos, untyped level, Integer min_width, Integer max_width) -> (Integer| nil)
+    def find_pulse: ((Integer|Point|LevelEntry) start, LevelEntry::Level level, Integer min_width, Integer max_width, Hash[Symbol, untyped] options) -> (LevelEntry| nil)
 
     private
 
     FLOAT_REGEX: ::Regexp
 
-    def parse_float_unit: (untyped str) -> untyped
+    def parse_float_unit: (String str) -> Unitwise
   end
 end
