@@ -24,4 +24,6 @@ class LevelEntry
   def initialize: (Point start, Integer period) -> void
 
   def <=>: (untyped other) -> untyped
+
+  def self.!: (LevelEntry) -> LevelEntry
 end

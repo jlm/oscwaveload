@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative 'point'
 
 class LevelEntry
   include Comparable
@@ -14,6 +15,10 @@ class LevelEntry
     def self.to_s(level)
       LEVEL_NAMES[level.to_sym]
     end
+
+    def self.!(level)
+      level == HIGH ? LOW : HIGH
+    end
   end
 
   # @param [Point] start the starting Point (level and position)
@@ -24,6 +29,18 @@ class LevelEntry
   end
 
   def <=>(other)
-    @period <=> other.period
+    start <=> other
+  end
+
+  def to_s
+    "#{@start}(#{@period})"
+  end
+
+  def -(other)
+    @start - other.start
+  end
+
+  def end
+    OscWave::Point.new(@start + @period, !@start.level )
   end
 end
