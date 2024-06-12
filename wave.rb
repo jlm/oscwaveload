@@ -5,8 +5,13 @@ module OscWave
   class Wave
     attr_accessor :timebase, :rate, :amplitude, :amplres, :data_unit, :data_points, :data, :pos, :levels
 
-    class Wave::Indeterminate < RuntimeError; end
-    class Wave::PositionOutOfRange < RuntimeError; end
+    module Wave
+      class Indeterminate < RuntimeError
+      end
+
+      class PositionOutOfRange < RuntimeError
+      end
+    end
 
     def initialize(wave, logger: Logger.new(STDERR))
       @logger = logger
@@ -26,7 +31,7 @@ module OscWave
 
       stream.each_line do |line|
         line.chomp!
-        if line.match? /^[A-Z]/
+        if line.match?(/^[A-Z]/)
           k, v = line.split(':')
           case k
           when 'Time Base'
@@ -38,7 +43,7 @@ module OscWave
           when 'Amplitude resolution'
             @amplres = parse_float_unit(v)
           when 'Data Uint'
-            @data_unit = v.match(/(.)v/) ? $1 + 'V' : v
+            @data_unit = v.match(/(.)v/) ? "#{$1}V" : v
           when 'Data points'
             @data_points = v.to_i
           else
@@ -64,7 +69,7 @@ module OscWave
     end
 
     def next_low
-      ((@pos + 1)..(@data_points-1)).each do |pos|
+      ((@pos + 1)..(@data_points - 1)).each do |pos|
         if @data[pos] < @low_t
           return @pos = pos
         end
@@ -73,7 +78,7 @@ module OscWave
     end
 
     def next_high
-      ((@pos + 1)..(@data_points-1)).each do |pos|
+      ((@pos + 1)..(@data_points - 1)).each do |pos|
         if @data[pos] > @high_t
           return @pos = pos
         end
@@ -88,6 +93,7 @@ module OscWave
       elsif cv < @low_t
         return next_high
       end
+
       nil
     end
 
@@ -107,9 +113,10 @@ module OscWave
       while @pos < data_points do
         p1 = Point.new(@pos, current_level)
         break unless next_edge
+
         p2 = Point.new(@pos, current_level)
         period = p2 - p1
-        @logger.debug "#{p1.to_s} for #{period} periods, #{format_time((sample_period * period).round(4))}"
+        @logger.debug "#{p1} for #{period} periods, #{format_time((sample_period * period).round(4))}"
         @levels << LevelEntry.new(p1, period)
       end
 
@@ -121,11 +128,9 @@ module OscWave
       time = -time if negative
 
       units.each do |unit|
-        if time > 1.0
-          return (negative ? '-' : '') + time.round(round).to_s + ' ' + unit
-        else
-          time = time * 1000.0
-        end
+        return "#{negative ? '-' : ''}#{time.round(round).to_s} #{unit}" if time > 1.0
+
+        time *= 1000.0
       end
     end
 
@@ -141,15 +146,8 @@ module OscWave
       num
     end
 
-    # Look for a pulse in the wave data.
-    # @param [Integer|Point|LevelEntry] start Search from here
-    # @param [Symbol|LevelEntry::Level] level the logic level of the sought pulse
-    # @param [Integer] min_width the minimum pulse width
-    # @param [Integer] max_width the maximum pulse width
-    # @param [Hash] options an array of options such as {complain: "description"}
-    # @return [LevelEntry] LevelEntry of first matching pulse, or nil
-    def find_pulse(start, level, min_width, max_width, options = {})
-      start_pos = case start
+    def get_position(start)
+      case start
       when Numeric
         start
       when Point
@@ -159,29 +157,33 @@ module OscWave
       else
         raise TypeError, 'find_pulse: start must be a position, Point or LevelEntry'
       end
+    end
+
+    # Look for a pulse in the wave data.
+    # @param start Search from here
+    # @param level the logic level of the sought pulse
+    # @param min_width the minimum pulse width
+    # @param max_width the maximum pulse width
+    # @param options an array of options such as {complain: "description"}
+    # @return LevelEntry of first matching pulse, or nil
+    def find_pulse(start, level, min_width, max_width,
+      options = {})
+      start_pos = get_position(start)
       raise Wave::PositionOutOfRange unless start_pos.between?(0, @data_points)
-      # A high pulse consists of a rising edge followed by a falling edge.
+
       @levels.each do |lent|
-        lsp = lent.start.position
-        if lsp >= start_pos && lent.start.level == level
-          @logger.debug("find_pulse: found potential matching pulse at #{lent}")
-          if lent.period < min_width
-            @logger.debug("find_pulse: ... but it's too narrow #{lent.period}")
-            next
-          elsif lent.period > max_width
-            @logger.debug("find_pulse: ... but it's too wide #{lent.period}")
-            next
-          else
-            @logger.debug("find_pulse: ... and it's just right! #{lent.period}")
-            return lent
-          end
-        end
+        return lent if lent.start.position >= start_pos &&
+                       lent.start.level == level &&
+                       lent.period >= min_width &&
+                       lent.period <= max_width
       end
       raise "didn't find pulse: #{options[:complain]}" if options[:complain]
+
       nil
     end
 
     private
+
     FLOAT_REGEX = /(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/
 
     def parse_float_unit(str)
