@@ -177,7 +177,7 @@ module OscWave
           end
         end
       end
-      raise options[:complain] if options[:complain]
+      raise "didn't find pulse: #{options[:complain]}" if options[:complain]
       nil
     end
 
