@@ -88,18 +88,31 @@ begin
   logger.fatal("No data file given") if filename.nil?
   abort "No data file given" if filename.nil?
 
-  wavedata = OscWave::Wave.new(filename, logger: logger)
-  logger.info "Sample period: #{wavedata.format_time(wavedata.sample_period)}"
-  wavedata.extract_levels
+  w = OscWave::Wave.new(filename, logger: logger)
+  logger.info "Sample period: #{w.format_time(w.sample_period)}"
+  w.extract_levels
   pause = 0
 
-  print_hist_data(wavedata, :high, opts[:highs]) if opts[:highs]
-  print_hist_data(wavedata, :low, opts[:lows]) if opts[:lows]
-  plot_raw(wavedata, opts[:plotraw], 1) if opts[:plotraw].length == 2
-  plot_levels(wavedata, opts[:plotlevels], 2, [42, 2]) if opts[:plotlevels].length == 2
-  pause = 1
+  print_hist_data(w, :high, opts[:highs]) if opts[:highs]
+  print_hist_data(w, :low, opts[:lows]) if opts[:lows]
+  plot_raw(w, opts[:plotraw], 1) if opts[:plotraw].length == 2
+  plot_levels(w, opts[:plotlevels], 2, [42, 2]) if opts[:plotlevels].length == 2
 
-  # wavedata.find_pulse(0, :high, 38, 53)
+  pos = w.find_pulse(0, :low, 1000, 5000, { complain: "Gap before first frame" })
+  logger.info("First frame starts at #{pos.end}")
+  end_of_frame = w.find_pulse(pos.end, :low, 1000, 5000, { complain: "Gap before second frame" })
+  logger.info("First frame ends at #{end_of_frame}")
+  chars = []
+  while pos < end_of_frame
+    pos = w.find_pulse(pos, :high, 37, 53, { complain: "Start of character" })
+    logger.info("Start of character at #{pos}")
+    nextcharpos = w.find_pulse(pos.end, :high, 37, 53, { complain: "Start of next character" })
+    logger.info("Length of character: #{nextcharpos - pos} or #{w.format_time((nextcharpos - pos) * w.sample_period)}")
+    chars << { start: pos, end: nextcharpos }
+    pos = nextcharpos.end
+  end
+  logger.info("Frame had #{chars.length} characters")
+  pause = 3
 
   if opts.wait?
     logger.warn("Waiting around...")
