@@ -7,11 +7,11 @@ require "gr/plot"
 
 def print_hist_data(data, level, filename)
   hist = data.levels.select { |l| l.start.level == level }
-    .map { |l| l.period }.tally.sort_by { |p, c| c }
-    .last(15).sort_by { |period, count| period }
+    .map { |l| l.period }.tally.sort_by { |_p, c| c }
+    .last(15).sort_by { |period, _count| period }
   stream = File.open(filename, "w")
-  (0..(data.last[0])).each do |period|
-    val = data.find { |p, c| p == period }
+  (0..(hist.last[0])).each do |period|
+    val = hist.find { |p, _c| p == period }
     val = 0 unless val
     stream.puts "#{period}, #{val[1]}"
   end
@@ -28,7 +28,7 @@ def plot_raw(data, range, subplot_index, y_expansion = 1.4, figsize = [20, 4])
     ylim: [ymin, ymax]
   }
   GR.plot(Array(from..(to)), data.data[from..to], params.merge(GR.subplot(2, 1, subplot_index)))
-  pause = 0
+  _pause = 0
 end
 
 def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20, 4])
@@ -55,7 +55,7 @@ def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20,
     end
   end
   GR.plot(xvals, yvals, params.merge(GR.subplot(2, 1, subplot_index)))
-  pause = 0
+  _pause = 0
 end
 
 begin
@@ -91,7 +91,7 @@ begin
   w = OscWave::Wave.new(filename, logger: logger)
   logger.info "Sample period: #{w.format_time(w.sample_period)}"
   w.extract_levels
-  pause = 0
+  _pause = 0
 
   print_hist_data(w, :high, opts[:highs]) if opts[:highs]
   print_hist_data(w, :low, opts[:lows]) if opts[:lows]
@@ -112,7 +112,7 @@ begin
     pos = nextcharpos.end
   end
   logger.info("Frame had #{chars.length} characters")
-  pause = 3
+  _pause = 3
 
   if opts.wait?
     logger.warn("Waiting around...")
