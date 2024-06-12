@@ -142,7 +142,7 @@ module OscWave
     end
 
     # Look for a pulse in the wave data.
-    # @param [Integer] start Search from here
+    # @param [Integer|Point|LevelEntry] start Search from here
     # @param [LevelEntry::Level] level the logic level of the sought pulse
     # @param [Integer] min_width the minimum pulse width
     # @param [Integer] max_width the maximum pulse width
