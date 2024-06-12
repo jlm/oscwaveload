@@ -1,22 +1,51 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.2)
     fiddle (1.1.2)
     gr-plot (0.0.1)
       ruby-gr
+    json (2.7.2)
+    language_server-protocol (3.17.0.3)
     liner (0.2.4)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
+    minitest (5.23.1)
     numo-narray (0.9.2.1)
+    parallel (1.24.0)
+    parser (3.3.1.0)
+      ast (~> 2.4.1)
+      racc
     parslet (2.0.0)
     pkg-config (1.5.6)
+    racc (1.8.0)
+    rainbow (3.1.1)
+    regexp_parser (2.9.2)
+    rexml (3.2.8)
+      strscan (>= 3.0.9)
+    rubocop (1.63.5)
+      json (~> 2.3)
+      language_server-protocol (>= 3.17.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.31.1, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 3.0)
+    rubocop-ast (1.31.3)
+      parser (>= 3.3.1.0)
     ruby-gr (0.72.9.0)
       fiddle (>= 1.1.0)
       numo-narray
       pkg-config
+    ruby-progressbar (1.13.0)
     signed_multiset (0.2.1)
     slop (4.10.1)
+    strscan (3.1.0)
     thread_safe (0.3.6)
+    unicode-display_width (2.5.0)
     unitwise (2.3.0)
       liner (~> 0.2)
       memoizable (~> 0.4)
@@ -29,6 +58,8 @@ PLATFORMS
 
 DEPENDENCIES
   gr-plot
+  minitest
+  rubocop
   slop (>= 3.5.1)
   unitwise (>= 1.1.0)
 
