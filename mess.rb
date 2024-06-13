@@ -32,7 +32,7 @@ def plot_raw(data, range, subplot_index, y_expansion = 1.4, figsize = [20, 4])
   _pause = 0
 end
 
-def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20, 4])
+def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20, 4], slide: 0)
   from = range[0].to_i
   to = range[1].to_i
   ymin = -0.5
@@ -43,7 +43,7 @@ def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20,
     xlim: [from, to],
     xticks:
   }
-  pos = 0
+  pos = slide.to_i
   xvals = []
   yvals = []
   wavedata.levels.each do |l|
@@ -57,6 +57,38 @@ def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20,
   end
   GR.plot(xvals, yvals, params.merge(GR.subplot(2, 1, subplot_index)))
   _pause = 0
+end
+
+def average_char_length(chars)
+  total = 0.0
+  chars.each do |char|
+    total += char[:end] - char[:start]
+  end
+  total / chars.length
+end
+
+def parse_wave_for_characters(w, logger, train_chars:, start_bit_width:, frame_separator_width:)
+  pos = w.find_pulse(0, :low, frame_separator_width, { complain: 'Gap before first frame' })
+  logger.info("First frame starts at #{pos.end}")
+  end_of_frame = w.find_pulse(pos.end, :low, frame_separator_width, { complain: 'Gap before second frame' })
+  logger.info("First frame ends at #{end_of_frame}")
+  chars = []
+  learned_char_length = nil
+  while pos < end_of_frame
+    pos = w.find_pulse(pos, :high, start_bit_width, { complain: 'Start of character' })
+    logger.debug("Start of character at #{pos}")
+    # Once training is done, switch to looking for the next character at a predicted location, using relaxed bit-length
+    if chars.length == train_chars
+      learned_char_length = average_char_length(chars)
+      start_bit_width[1] = learned_char_length * 0.9
+    end
+    likely_next_char_start = learned_char_length.nil? ? pos.end : pos.start + learned_char_length * 0.9
+    nextcharpos = w.find_pulse(likely_next_char_start, :high, start_bit_width, { complain: 'Start of next character' })
+    logger.info("Character #{chars.length}: start: #{pos}; length: #{nextcharpos - pos} or #{w.format_time((nextcharpos - pos) * w.sample_period)}")
+    chars << { start: pos, end: nextcharpos }
+    pos = nextcharpos.end
+  end
+  chars
 end
 
 begin
@@ -97,21 +129,9 @@ begin
   print_hist_data(w, :high, opts[:highs]) if opts[:highs]
   print_hist_data(w, :low, opts[:lows]) if opts[:lows]
   plot_raw(w, opts[:plotraw], 1) if opts[:plotraw].length == 2
-  plot_levels(w, opts[:plotlevels], 2, [42, 2]) if opts[:plotlevels].length == 2
+  plot_levels(w, opts[:plotlevels][0..1], 2, [777, 10], slide: opts[:plotlevels][2]) if opts[:plotlevels].length >= 2
 
-  pos = w.find_pulse(0, :low, 1000, 5000, { complain: 'Gap before first frame' })
-  logger.info("First frame starts at #{pos.end}")
-  end_of_frame = w.find_pulse(pos.end, :low, 1000, 5000, { complain: 'Gap before second frame' })
-  logger.info("First frame ends at #{end_of_frame}")
-  chars = []
-  while pos < end_of_frame
-    pos = w.find_pulse(pos, :high, 37, 53, { complain: 'Start of character' })
-    logger.info("Start of character at #{pos}")
-    nextcharpos = w.find_pulse(pos.end, :high, 37, 53, { complain: 'Start of next character' })
-    logger.info("Length of character: #{nextcharpos - pos} or #{w.format_time((nextcharpos - pos) * w.sample_period)}")
-    chars << { start: pos, end: nextcharpos }
-    pos = nextcharpos.end
-  end
+  chars = parse_wave_for_characters(w, logger, train_chars: 4, start_bit_width: [ 37, 53 ], frame_separator_width: [ 1000, 5000 ])
   logger.info("Frame had #{chars.length} characters")
   _pause = 3
 
