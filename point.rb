@@ -11,7 +11,14 @@ module OscWave
     end
 
     def <=>(other)
-      position <=> other.start.position
+      case other
+      when Point
+        position <=> other.start.position
+      when Numeric
+        position <=> other
+      when LevelEntry
+        position <=> other.start.position
+      end
     end
 
     def -(other)
