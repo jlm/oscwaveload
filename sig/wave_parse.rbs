@@ -1,0 +1,14 @@
+# Parse a wave into frames
+class WaveParse
+  @wave: OscWave::Wave
+
+  @logger: Logger
+
+  @frame_gap_width: Array[Integer]
+
+  def initialize: (OscWave::Wave wave, ?logger: Logger) -> void
+
+  def extract_frames: (Array[Integer] frame_gap_width, Integer start, Integer finish) -> Array[Hash[Symbol, Integer]]
+
+  def parse_wave_for_characters: (untyped w, untyped logger, train_chars: untyped, start_bit_width: untyped) -> untyped
+end

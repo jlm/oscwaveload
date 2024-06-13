@@ -1,0 +1,9 @@
+class Frame
+  @length: Integer
+  @logger: Logger
+  @wave: OscWave::Wave
+
+  def a_bit_less_than: (Numeric) -> Float
+
+  def extract_characters: (train_chars: Numeric, start_bit_width: Array[Numeric]) -> Array[Hash[Symbol, Numeric]]
+end
