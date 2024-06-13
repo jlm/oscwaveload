@@ -86,7 +86,7 @@ def parse_wave_for_characters(w, logger, train_chars:, start_bit_width:, frame_s
     nextcharpos = w.find_pulse(likely_next_char_start, :high, start_bit_width, { complain: 'Start of next character' })
     logger.info("Character #{chars.length}: start: #{pos}; length: #{nextcharpos - pos} or #{w.format_time((nextcharpos - pos) * w.sample_period)}")
     chars << { start: pos, end: nextcharpos }
-    pos = nextcharpos.end
+    pos = nextcharpos
   end
   chars
 end
