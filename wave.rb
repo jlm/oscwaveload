@@ -162,12 +162,12 @@ module OscWave
     # Look for a pulse in the wave data.
     # @param start Search from here
     # @param level the logic level of the sought pulse
-    # @param min_width the minimum pulse width
-    # @param max_width the maximum pulse width
+    # @param pulse_width the [minimum,maximum] pulse width
     # @param options an array of options such as {complain: "description"}
     # @return LevelEntry of first matching pulse, or nil
-    def find_pulse(start, level, min_width, max_width,
+    def find_pulse(start, level, pulse_width,
       options = {})
+      min_width, max_width = pulse_width
       start_pos = get_position(start)
       raise Wave::PositionOutOfRange unless start_pos.between?(0, @data_points)
 

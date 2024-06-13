@@ -63,8 +63,7 @@ module OscWave
 
     def multiplier: (untyped num, untyped mul) -> untyped
 
-    def find_pulse: ((Integer|Point|LevelEntry) start, (Symbol|Integer|LevelEntry::Level) level, Integer min_width,
-        Integer max_width, Hash[Symbol, untyped] options) -> (LevelEntry|nil)
+    def find_pulse: ((Integer|Point|LevelEntry) start, (Symbol|Integer|LevelEntry::Level) level, Array[Integer] pulse_width, Hash[Symbol, untyped] options) -> (LevelEntry|nil)
 
     private
 
