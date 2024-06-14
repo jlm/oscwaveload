@@ -42,4 +42,14 @@ class Frame
     @chars
   end
 
+  private
+  def average_char_length(chars)
+    total = 0.0
+    chars.each do |char|
+      total += char.finish - char.start
+    end
+    total / chars.length
+  end
+
+
 end

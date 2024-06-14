@@ -60,14 +60,6 @@ def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20,
   _pause = 0
 end
 
-def average_char_length(chars)
-  total = 0.0
-  chars.each do |char|
-    total += char[:end] - char[:start]
-  end
-  total / chars.length
-end
-
 begin
   opts = Slop.parse do |o|
     o.string '-s', '--secrets', 'secrets YAML file name', default: 'secrets.yml'
