@@ -1,3 +1,5 @@
+# Copyright (c) 2024 John Messenger. All rights reserved.
+
 include Character
 
 class Frame

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Copyright (c) 2024 John Messenger. All rights reserved.
+
 require_relative 'character'
 
 # Parse a frame into characters

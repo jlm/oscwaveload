@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Copyright (c) 2024 John Messenger. All rights reserved.
+
 require 'rubygems'
 require 'bundler/setup'
 Bundler.require
@@ -60,6 +62,14 @@ def plot_levels(wavedata, range, subplot_index, xticks = [42, 2], figsize = [20,
   _pause = 0
 end
 
+# Oscwaveload reads a CSV data file saved by a UNI-T Digital Storage Oscilloscope.  The data file is expected
+# to represent a waveform of an RS-232 data signal with a baud rate of 9600.  The data is plotted using the QR library.
+# It is broken down into frames, separated by gaps of quite line, and the frames are broken down into ASCII characters.
+# The timing parameters are quite adaptable and the program is likely to be useful for
+# detailed analysis of any RS-232 waveform with a repeating frame structure, at least as a basis.
+# While the program has solved the analysis issue I set out to solve (of a cricket scorebox produced by M J
+# Electronics (Leeds), there remain many shortcomings, e.g., the plot viewer should be interactive with cursors,
+# as provided on an oscilloscope.
 begin
   opts = Slop.parse do |o|
     o.string '-s', '--secrets', 'secrets YAML file name', default: 'secrets.yml'

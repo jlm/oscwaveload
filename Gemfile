@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Copyright (c) 2024 John Messenger. All rights reserved.
+
 source 'https://rubygems.org'
 ruby file: '.ruby-version'
 
