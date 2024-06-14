@@ -64,6 +64,10 @@ class LevelEntry
     "#{@start}(#{@period})"
   end
 
+  def to_i
+    start.position
+  end
+
   def -(other)
     @start - other.start
   end

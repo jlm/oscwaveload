@@ -97,14 +97,18 @@ module OscWave
       nil
     end
 
-    def current_level
-      if @data[@pos] < @low_t
+    def level_at(pos)
+      if @data[pos] < @low_t
         LevelEntry::Level::LOW
-      elsif @data[@pos] > @high_t
+      elsif @data[pos] > @high_t
         LevelEntry::Level::HIGH
       else
         raise Wave::Indeterminate, "Indeterminate level not outside range #{@low_t} to #{@high_t}"
       end
+    end
+
+    def current_level
+      level_at(@pos)
     end
 
     def extract_levels

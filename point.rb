@@ -32,5 +32,9 @@ module OscWave
     def to_s
       "#{level}@#{position}"
     end
+
+    def to_i
+      @position
+    end
   end
 end

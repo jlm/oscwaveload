@@ -99,7 +99,7 @@ begin
   frames = wp.extract_frames([ 1000, 5000 ])
   frames.each do |frame|
     chars = frame.extract_characters(train_chars: 4, start_bit_width: [ 37, 53 ])
-    logger.info("Frame had #{chars.length} characters")
+    logger.info("Frame had #{chars.length} characters: #{frame.to_s(true)}")
   end
 
 
