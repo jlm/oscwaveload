@@ -67,9 +67,8 @@ end
 # It is broken down into frames, separated by gaps of quite line, and the frames are broken down into ASCII characters.
 # The timing parameters are quite adaptable and the program is likely to be useful for
 # detailed analysis of any RS-232 waveform with a repeating frame structure, at least as a basis.
-# While the program has solved the analysis issue I set out to solve (of a cricket scorebox produced by M J
-# Electronics (Leeds), there remain many shortcomings, e.g., the plot viewer should be interactive with cursors,
-# as provided on an oscilloscope.
+# While the program has solved the analysis issue I set out to solve (of a cricket scorebox), there remain many
+# shortcomings, e.g., the plot viewer should be interactive with cursors, as provided on an oscilloscope.
 begin
   opts = Slop.parse do |o|
     o.string '-s', '--secrets', 'secrets YAML file name', default: 'secrets.yml'
