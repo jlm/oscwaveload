@@ -70,8 +70,11 @@ begin
     o.string '-l', '--lows', 'filename to print LOW histogram data to'
     o.bool '-w', '--wait', 'wait forever at the end'
     o.bool '--pulses', 'print the pulse list'
+    o.bool '--nochars', 'do not extract characters'
     o.array '--plotraw', 'Plot raw data: start..finish', delimiter: '..'
-    o.array '--plotlevels', 'Plot level data: start..finish', delimiter: '..'
+    o.array '--plotlevels', 'Plot level data: start..finish[..slide]', delimiter: '..'
+    o.array '--sbw', 'Start bit width: small..large', delimiter: '..'
+    o.array '--fgw', 'Frame gap width: small..large', delimiter: '..'
     o.string '--region', 'region to create the vm in'
     o.string '--config', 'read cloud-init user data from given file'
     o.on '--help' do
@@ -90,18 +93,26 @@ begin
   logger.fatal('No data file given') if filename.nil?
   abort 'No data file given' if filename.nil?
 
+  start_bit_width = opts[:sbw].empty? ? [ 37, 53 ] : opts[:sbw].map(&:to_i)
+  frame_gap_width = opts[:fgw].empty? ? [ 1000, 5000 ] : opts[:fgw].map(&:to_i)
+
   w = OscWave::Wave.new(filename, logger:)
   logger.info "Sample period: #{w.format_time(w.sample_period)}"
+  logger.info "Amplitude: #{w.amplitude}"
+  logger.info "Data unit: #{w.data_unit}"
+  logger.info "Timebase: #{w.timebase}"
+  logger.info "Rate: #{w.rate}"
   w.extract_levels
   _pause = 0
 
   wp = WaveParse.new(w, logger:)
-  frames = wp.extract_frames([ 1000, 5000 ])
-  frames.each do |frame|
-    chars = frame.extract_characters(train_chars: 4, start_bit_width: [ 37, 53 ])
-    logger.info("Frame had #{chars.length} characters: #{frame.to_s(true)}")
+  frames = wp.extract_frames(frame_gap_width)
+  unless opts.nochars?
+    frames.each do |frame|
+      chars = frame.extract_characters(train_chars: 4, start_bit_width:)
+      logger.info("Frame had #{chars.length} characters: #{frame.to_s(true)}")
+    end
   end
-
 
   print_hist_data(w, :high, opts[:highs]) if opts[:highs]
   print_hist_data(w, :low, opts[:lows]) if opts[:lows]
