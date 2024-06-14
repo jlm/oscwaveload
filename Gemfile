@@ -11,3 +11,7 @@ group :test do
   gem 'minitest'
 end
 gem 'rubocop', group: 'development', require: false
+
+# These gems will not be included by default in Ruby 3.4, so they cause annoying warnings unless you include them
+gem 'mutex_m'
+gem 'bigdecimal'
